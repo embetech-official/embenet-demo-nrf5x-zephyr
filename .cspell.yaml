@@ -1,0 +1,130 @@
+enabled: true
+readonly: true
+language: en
+caseSensitive: false
+
+useGitignore: false # ensures better compatibility when used in multiple projects
+
+enabledFileTypes:
+ - cpp
+ - c
+ - markdown
+ - cmake
+ - json
+ - yaml
+
+files: /**
+ignorePaths:
+ - .clangd
+ - .clang-format
+ - .cmake-format
+ - .cspell.yaml
+ - libs/**             # release bundles, not ours to spell-check
+ - build/**
+ - install/**
+ - .cpm-cache/**
+
+ignoreRegExpList:
+ - /-W(no)*[a-z]+/g # ignore compiler warning flags
+ - /-D[A-Z]+/g # ignore compiler define flags
+
+words:
+ # Zephyr and its build system
+ - cpuapp
+ - devicetree
+ - endchoice
+ - kconfig
+ - menuconfig
+ - msgq
+ - pinctrl
+ - printk
+ - subsys
+ - workqueue
+ - zassert
+ - ztest
+
+ # CMake
+ - endforeach
+ - endfunction
+
+ # Toolchain, architectures and the C/C++ runtime
+ - eabi
+ - eabihf
+ - glibcxx
+ - hardabi
+ - libc
+ - libcpp
+ - libstdc
+ - mcpu
+ - mfpu
+ - multilib
+ - rodata
+ - rtti
+ - thumbv
+
+ # Debug probes and host tooling
+ - segger
+ - vcom
+
+ # embeNET and embetech
+ - embe
+ - embenet
+ - embetech
+ - embeutils
+
+ # Peripherals and radio terms
+ - balen
+ - ccen
+ - clkcfg
+ - clksel
+ - crccnf
+ - crcinit
+ - crcpoly
+ - datawhiteiv
+ - dppi
+ - dppic
+ - ecbdataptr
+ - grtc
+ - hfclk
+ - hfclkstart
+ - hfint
+ - hfxo
+ - hwinfo
+ - lfclk
+ - lfclkstart
+ - lflen
+ - lflprc
+ - lfsr
+ - modecnf
+ - nrfconnect
+ - nrfx
+ - nrfxlib
+ - nvic
+ - ocrypto
+ - pclk
+ - pcnf
+ - phyend
+ - ppib
+ - rram
+ - rssistart
+ - rxaddresses
+ - rxen
+ - syscounterh
+ - txen
+ - txpower
+ - uart
+ - usart
+ - vdma
+ - whiteen
+ - xtal
+
+ # embeNET port vocabulary
+ - appb
+ - hdlc
+ - inmem
+ - pandata
+ - panid
+ - psdu
+ - rssi
+ - spsc
+ - tsch

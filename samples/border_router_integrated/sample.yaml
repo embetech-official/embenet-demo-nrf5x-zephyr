@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2026 Embetech sp. z o.o.
+# SPDX-License-Identifier: Apache-2.0
+
+sample:
+  name: embeNET Border Router (all-in-one)
+  description: Border router and root node in a single image, linked by an in-memory queue
+tests:
+  sample.embenet.border_router_integrated:
+    tags: embenet
+    build_only: true
+    platform_allow:
+      - nrf52840dk/nrf52840
+      - nrf54l15dk/nrf54l15/cpuapp

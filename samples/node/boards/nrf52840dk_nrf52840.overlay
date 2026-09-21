@@ -1,0 +1,12 @@
+/* The node port opens this UART even though a plain mesh node does not use it - only a root node
+ * talks to a border router over it. Left configured so startup stays quiet. */
+/ {
+	aliases {
+		embenet-border-router-uart = &uart1;
+	};
+};
+
+&uart1 {
+	status = "okay";
+	current-speed = <115200>;
+};

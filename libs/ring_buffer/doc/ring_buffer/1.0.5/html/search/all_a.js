@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['reference_0',['API reference',['../index.html#autotoc_md0',1,'']]],
+  ['ring_20buffer_1',['ring buffer',['../group__ring__buffer.html',1,'This module delivers a basic, general-purpose ring buffer.'],['../group__ring__buffer__16bit.html',1,'This module delivers a basic, general-purpose ring buffer.']]],
+  ['ring_20buffer_20library_2',['EMBETECH Ring Buffer library',['../index.html',1,'']]],
+  ['ring_5fbuffer_2eh_3',['ring_buffer.h',['../ring__buffer_8h.html',1,'']]],
+  ['ring_5fbuffer_5f16bit_2eh_4',['ring_buffer_16bit.h',['../ring__buffer__16bit_8h.html',1,'']]],
+  ['ringbuffer_5',['RingBuffer',['../struct_ring_buffer.html',1,'']]],
+  ['ringbuffer16bit_6',['RingBuffer16Bit',['../struct_ring_buffer16_bit.html',1,'']]],
+  ['ringbuffer16bit_5fclear_7',['RingBuffer16Bit_Clear',['../group__ring__buffer__16bit.html#ga4630872eeec388686752daccd273f205',1,'ring_buffer_16bit.h']]],
+  ['ringbuffer16bit_5fgetcapacity_8',['RingBuffer16Bit_GetCapacity',['../group__ring__buffer__16bit.html#gad89db85624ea2f21717e1c41db53b5b3',1,'ring_buffer_16bit.h']]],
+  ['ringbuffer16bit_5fgetchar_9',['RingBuffer16Bit_GetChar',['../group__ring__buffer__16bit.html#ga0fde9025cc10bf5b0f3f7ae3e8e5c5bf',1,'ring_buffer_16bit.h']]],
+  ['ringbuffer16bit_5fgetlen_10',['RingBuffer16Bit_GetLen',['../group__ring__buffer__16bit.html#gabb570030e928ed3e8f69fe1ba4aa28df',1,'ring_buffer_16bit.h']]],
+  ['ringbuffer16bit_5fgetspace_11',['RingBuffer16Bit_GetSpace',['../group__ring__buffer__16bit.html#ga8c5776894e423f4c2b66407561c848b1',1,'ring_buffer_16bit.h']]],
+  ['ringbuffer16bit_5finit_12',['RingBuffer16Bit_Init',['../group__ring__buffer__16bit.html#ga925348dbb704188cd9cf7b2612140430',1,'ring_buffer_16bit.h']]],
+  ['ringbuffer16bit_5fisempty_13',['RingBuffer16Bit_IsEmpty',['../group__ring__buffer__16bit.html#ga2ea0e7d195759562c90677eb02286e20',1,'ring_buffer_16bit.h']]],
+  ['ringbuffer16bit_5fputchar_14',['RingBuffer16Bit_PutChar',['../group__ring__buffer__16bit.html#ga8fed133cfd2e8f25a559f19957923a25',1,'ring_buffer_16bit.h']]],
+  ['ringbuffer_5fclear_15',['RingBuffer_Clear',['../group__ring__buffer.html#ga5f2758edf19359b68dc8b18c68895f78',1,'ring_buffer.h']]],
+  ['ringbuffer_5fgetcapacity_16',['RingBuffer_GetCapacity',['../group__ring__buffer.html#gaf80012aed5bcc3a329d64a30abb19720',1,'ring_buffer.h']]],
+  ['ringbuffer_5fgetchar_17',['RingBuffer_GetChar',['../group__ring__buffer.html#gacbee0e605ddac8f0924407ad51eb08a6',1,'ring_buffer.h']]],
+  ['ringbuffer_5fgetlen_18',['RingBuffer_GetLen',['../group__ring__buffer.html#ga6c5dd7808a7fd504d875801e2a12e160',1,'ring_buffer.h']]],
+  ['ringbuffer_5fgetspace_19',['RingBuffer_GetSpace',['../group__ring__buffer.html#ga0e597c864f3081ca179f94765b178558',1,'ring_buffer.h']]],
+  ['ringbuffer_5fgetversionstring_20',['RingBuffer_GetVersionString',['../group__ring__buffer.html#gaf0ff743a4b4e35f3d7c58bfb7fc3dac9',1,'ring_buffer.h']]],
+  ['ringbuffer_5finit_21',['RingBuffer_Init',['../group__ring__buffer.html#ga53ca62183c43feb6be6042410642d50d',1,'ring_buffer.h']]],
+  ['ringbuffer_5fisempty_22',['RingBuffer_IsEmpty',['../group__ring__buffer.html#ga10b2b44024e6db571b8894c0085e1c26',1,'ring_buffer.h']]],
+  ['ringbuffer_5fputchar_23',['RingBuffer_PutChar',['../group__ring__buffer.html#ga257cb49affef169770cabbcdb341f53f',1,'ring_buffer.h']]]
+];

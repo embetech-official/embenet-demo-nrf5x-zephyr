@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['network_5fadapter_5ffailure_0',['network_adapter_failure',['../namespaceembenet_1_1border__router.html#a6c21be99529e163079c3e37572bec9a8abc72ce356115238443d9bd536bdaac80',1,'embenet::border_router']]],
+  ['network_5fdown_1',['network_down',['../namespaceembenet_1_1border__router.html#a6c21be99529e163079c3e37572bec9a8a93b16d34b1689f66f0cfed60e99c0009',1,'embenet::border_router']]],
+  ['network_5fstarted_2',['network_started',['../namespaceembenet_1_1border__router.html#a949fce2b3f5fad1b760f81b0324a3f95ac4e5afbb332c0b6053160f62794e71fc',1,'embenet::border_router']]],
+  ['network_5fstopped_3',['network_stopped',['../namespaceembenet_1_1border__router.html#a949fce2b3f5fad1b760f81b0324a3f95a62b7ac05943a4f3a70a36b0495bcd896',1,'embenet::border_router']]],
+  ['no_5fbuffer_5fspace_4',['no_buffer_space',['../namespaceembenet_1_1border__router.html#a6c21be99529e163079c3e37572bec9a8a618ead44397b73cf0baa08b460b66c39',1,'embenet::border_router']]],
+  ['no_5flink_5',['no_link',['../namespaceembenet_1_1border__router.html#a6c21be99529e163079c3e37572bec9a8add431dfaf61ea842693dca8be1ebcaf7',1,'embenet::border_router']]],
+  ['no_5froot_5fnode_6',['no_root_node',['../namespaceembenet_1_1border__router.html#a6c21be99529e163079c3e37572bec9a8a061a0de61b95c221bb4952c25e22f52d',1,'embenet::border_router']]],
+  ['node_5fjoined_5fgroup_7',['node_joined_group',['../namespaceembenet_1_1border__router.html#a949fce2b3f5fad1b760f81b0324a3f95ac55824595b5b7e80ae4d68cbe2ce3952',1,'embenet::border_router']]],
+  ['node_5fjoined_5fnetwork_8',['node_joined_network',['../namespaceembenet_1_1border__router.html#a949fce2b3f5fad1b760f81b0324a3f95a10c6bab9565035a4839cf01b947e6852',1,'embenet::border_router']]],
+  ['node_5fleft_5fgroup_9',['node_left_group',['../namespaceembenet_1_1border__router.html#a949fce2b3f5fad1b760f81b0324a3f95a2187e2e2f39d355ed0b668e74cc99dcb',1,'embenet::border_router']]],
+  ['node_5fleft_5fnetwork_10',['node_left_network',['../namespaceembenet_1_1border__router.html#a949fce2b3f5fad1b760f81b0324a3f95a2fdb49b0277ec6fa475d884b694ce725',1,'embenet::border_router']]],
+  ['none_11',['none',['../namespaceembenet_1_1border__router.html#a6c21be99529e163079c3e37572bec9a8a334c4a4c42fdb79d7ebc3e73b517e6f8',1,'embenet::border_router']]],
+  ['not_5fconfigured_12',['not_configured',['../namespaceembenet_1_1border__router.html#a6c21be99529e163079c3e37572bec9a8aeb2b96e8967475b9eb5268929655a432',1,'embenet::border_router']]],
+  ['not_5fconnected_13',['not_connected',['../namespaceembenet_1_1border__router.html#a6c21be99529e163079c3e37572bec9a8a69c2dbb5917ca550a862e9c1c839bca1',1,'embenet::border_router']]],
+  ['not_5fenough_5fmemory_14',['not_enough_memory',['../namespaceembenet_1_1border__router.html#a6c21be99529e163079c3e37572bec9a8aafdb5594dc3e484fc1bfd7c564d550c1',1,'embenet::border_router']]],
+  ['not_5ffound_15',['not_found',['../namespaceembenet_1_1border__router.html#a6c21be99529e163079c3e37572bec9a8a7500611bf7030bc99d25c354e7b64714',1,'embenet::border_router']]]
+];

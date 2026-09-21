@@ -1,0 +1,10 @@
+/* See the nRF52 overlay. uart30 is free on the application core; uart20 is the console. */
+/ {
+	aliases {
+		embenet-border-router-uart = &uart30;
+	};
+};
+
+&uart30 {
+	status = "okay";
+};

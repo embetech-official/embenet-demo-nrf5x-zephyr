@@ -1,0 +1,112 @@
+# SPDX-FileCopyrightText: 2026 Embetech sp. z o.o.
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig EMBENET
+	bool "embeNET wireless mesh networking stack"
+	select FPU
+	help
+	  Enable the embeNET stack, then pick the roles this image carries below. Node and Border
+	  Router are independent: a mesh device needs only EMBENET_NODE, a gateway paired with an
+	  external root node only EMBENET_BORDER_ROUTER, and an all-in-one gateway both.
+
+if EMBENET
+
+module = EMBENET
+module-str = embeNET
+source "subsys/logging/Kconfig.template.log_config"
+
+config EMBENET_NODE
+	bool "embeNET Node role"
+	select RING_BUFFER
+	select ENTROPY_GENERATOR
+	select HWINFO
+	select REBOOT
+	# EMBENET_AES128_Decrypt() runs in the slot ISR, where PSA cannot go - its dispatch layer
+	# takes a mutex. ocrypto is plain computation on a caller-supplied context, so it can.
+	select NRF_OBERON
+	help
+	  Mesh node. Drives the radio and joins, or in root mode forms, the network.
+
+if EMBENET_NODE
+
+config EMBENET_NODE_BRT_UART_TX_BUFFER_SIZE
+	int "Border router UART transmit buffer size, in bytes"
+	default 512
+	depends on EMBENET_TRANSPORT_UART
+	help
+	  Bytes buffered towards the border router.
+
+config EMBENET_NODE_BRT_UART_RX_BUFFER_SIZE
+	int "Border router UART receive buffer size, in bytes"
+	default 512
+	depends on EMBENET_TRANSPORT_UART
+	help
+	  Bytes buffered from the border router.
+
+config HEAP_MEM_POOL_ADD_SIZE_EMBENET_NODE
+	int "Heap reserved for the node stack, in bytes"
+	default 16384
+	help
+	  The stack takes one block from the system heap during EMBENET_NODE_Init(), sized by the
+	  capability template. Zephyr adds this to whatever other subsystems ask for, so an
+	  application does not have to size the heap itself. EMBENET_NODE_Init() fails if it is too
+	  small, so shrink this only against a measured figure.
+
+endif # EMBENET_NODE
+
+config EMBENET_BORDER_ROUTER
+	bool "embeNET Border Router role"
+	select RING_BUFFER
+	select ENTROPY_GENERATOR
+	select CPP
+	select CPP_EXCEPTIONS
+	select CPP_RTTI
+	select REQUIRES_FULL_LIBC
+	help
+	  Gateway between the mesh and the WAN side. Talks to a root node over the transport selected
+	  below.
+
+
+config HEAP_MEM_POOL_ADD_SIZE_EMBENET_BORDER_ROUTER
+	int "Heap reserved for the border router stack, in bytes"
+	default 16384
+	depends on EMBENET_BORDER_ROUTER
+	help
+	  The border router allocates its node table, packet queues and socket state from the system
+	  heap, sized by the capabilities passed to EMBENET_BR_Init().
+
+choice EMBENET_TRANSPORT
+	prompt "Node (root) to Border Router transport"
+	default EMBENET_TRANSPORT_UART
+	depends on EMBENET_NODE || EMBENET_BORDER_ROUTER
+	help
+	  How the border router reaches its root node.
+
+config EMBENET_TRANSPORT_UART
+	bool "UART"
+	select SERIAL
+	select UART_INTERRUPT_DRIVEN if SERIAL_SUPPORT_INTERRUPT
+	help
+	  Node and border router on separate devices, wired over UART. Each side names its peripheral
+	  with a devicetree alias: embenet-root-node-uart on the border router,
+	  embenet-border-router-uart on the node.
+
+config EMBENET_TRANSPORT_INMEM
+	bool "In-memory queue (all-in-one)"
+	depends on EMBENET_NODE && EMBENET_BORDER_ROUTER
+	help
+	  Both roles in one image, exchanging bytes through a shared queue instead of a UART. No
+	  wiring and no second board.
+
+endchoice
+
+config EMBENET_AIO_QUEUE_FRAME_COUNT
+	int "Frames per direction in the all-in-one queue"
+	default 8 if EMBENET_TRANSPORT_INMEM
+	default 0
+	help
+	  Capacity, in whole frames, of each of the two in-memory queues. Each slot holds a full
+	  300-byte frame, so a count of 8 costs about 5 kB of RAM. At 0 the queues are not compiled
+	  in at all, which is what a UART build wants.
+
+endif # EMBENET

@@ -1,0 +1,260 @@
+# ----------------------------------------------------------------------
+# This function sets maximum compiled logger channel levels for given target.
+#
+# logger_set_max_level(
+#   target_name
+#   CHANNEL <logger_channel>
+#   CONFIG <build_config>:<logger_level> [<build_config>:<logger_level>...]
+# )
+#
+# The logger_level can be one of the following: DISABLED, EMERGENCY, ALERT, CRITICAL, ERROR, WARNING, NOTICE, INFO, VERBOSE, DEBUG, TRACE
+# Build config names in CONFIG are matched case-insensitively against CMAKE_BUILD_TYPE /
+# CMAKE_CONFIGURATION_TYPES.
+# This function may be invoked once per target and channel.
+#
+# LOGGER_DEFAULT_MAX_LEVEL (CMake cache variable, default: DISABLED)
+#   Level used for any build configuration that is NOT listed in CONFIG (e.g. you only listed
+#   Debug/Release but the project also builds RelWithDebInfo/MinSizeRel, or a multi-config
+#   generator enables configurations you did not anticipate). Without this fallback, such a
+#   build configuration would compile with no valid channel level at all.
+#   Set it once for the whole project/CI to change the fallback everywhere, e.g.:
+#     cmake -B build -DLOGGER_DEFAULT_MAX_LEVEL=INFO
+#   Must be one of the logger_level values listed above.
+# ----------------------------------------------------------------------
+function (logger_set_max_level target)
+  if (NOT TARGET "${target}")
+    message(FATAL_ERROR "Target ${target} does not exist")
+  endif ()
+
+  set(flags QUIET)
+  set(single CHANNEL)
+  set(multi CONFIG)
+  cmake_parse_arguments(PARSE_ARGV 1 arg "${flags}" "${single}" "${multi}")
+
+  if (NOT arg_CHANNEL)
+    message(FATAL_ERROR "No log channel specified")
+  endif ()
+  set(channel ${arg_CHANNEL})
+
+  get_target_property(current ${target} "${channel}_LOG_LEVEL_CONFIGURED")
+  if (current)
+    message(FATAL_ERROR "Log level for channel ${channel} already set for target ${target}")
+  endif ()
+
+  if (NOT arg_CONFIG)
+    message(FATAL_ERROR "No log configuration specified for channel ${channel}")
+  endif ()
+
+  set(quiet ${arg_QUIET})
+
+  set(allowed_levels
+      "DISABLED"
+      "EMERGENCY"
+      "ALERT"
+      "CRITICAL"
+      "ERROR"
+      "WARNING"
+      "NOTICE"
+      "INFO"
+      "VERBOSE"
+      "DEBUG"
+      "TRACE"
+  )
+
+  # Level used for build configurations not covered by CONFIG. Cache variable so
+  # projects can override the fallback globally without changing every call site.
+  set(LOGGER_DEFAULT_MAX_LEVEL "DISABLED" CACHE STRING "Log level used for build configurations missing from a logger_set_max_level() CONFIG list")
+  set_property(CACHE LOGGER_DEFAULT_MAX_LEVEL PROPERTY STRINGS ${allowed_levels})
+
+  string(TOUPPER "${LOGGER_DEFAULT_MAX_LEVEL}" default_max_level)
+  if (NOT default_max_level IN_LIST allowed_levels)
+    message(FATAL_ERROR "Invalid LOGGER_DEFAULT_MAX_LEVEL: '${LOGGER_DEFAULT_MAX_LEVEL}'")
+  endif ()
+
+  get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+  if (is_multi_config)
+    set(expected_build_types ${CMAKE_CONFIGURATION_TYPES})
+  else ()
+    if (CMAKE_BUILD_TYPE)
+      set(single_build_type "${CMAKE_BUILD_TYPE}")
+    else ()
+      set(single_build_type "Release")
+      if (NOT quiet)
+        message(WARNING "CMAKE_BUILD_TYPE not set. Using default build type '${single_build_type}'")
+      endif ()
+    endif ()
+
+    set(expected_build_types ${single_build_type})
+  endif ()
+
+  set(used_build_types)
+
+  foreach (entry_str IN LISTS arg_CONFIG)
+    string(REPLACE ":" ";" entry "${entry_str}")
+
+    list(LENGTH entry entry_len)
+    if (NOT entry_len EQUAL 2)
+      message(FATAL_ERROR "Invalid configuration entry: ${entry_str}")
+    endif ()
+
+    list(GET entry 0 build_type)
+    # Build type names are compared case-insensitively (CMAKE_BUILD_TYPE /
+    # CMAKE_CONFIGURATION_TYPES casing is not guaranteed, e.g. "Debug" vs "debug").
+    string(TOUPPER "${build_type}" build_type_upper)
+
+    list(GET entry 1 level)
+    string(TOUPPER "${level}" level)
+
+    if (build_type_upper IN_LIST used_build_types)
+      message(FATAL_ERROR "Duplicate build type: ${build_type} in entry '${entry_str}'")
+    endif ()
+    list(APPEND used_build_types ${build_type_upper})
+
+    if (NOT level IN_LIST allowed_levels)
+      message(FATAL_ERROR "Invalid log level: '${level}' in entry '${entry_str}'")
+    endif ()
+
+    # Each build type gets its own plain (non-generator-expression) target property.
+    # This keeps per-config values individually inspectable/overridable later, and
+    # avoids nesting generator expressions inside a property's stored value, which
+    # $<TARGET_PROPERTY:...> does not expand.
+    set_target_properties(${target} PROPERTIES "${channel}_LOG_LEVEL_${build_type_upper}" "LOGGER_LEVEL_${level}")
+  endforeach ()
+
+  # Build types not covered by CONFIG fall back to LOGGER_DEFAULT_MAX_LEVEL instead
+  # of being left without a compiled level.
+  foreach (type IN LISTS expected_build_types)
+    string(TOUPPER "${type}" type_upper)
+    if (NOT type_upper IN_LIST used_build_types)
+      if (NOT quiet)
+        message(WARNING "Missing log configuration for build type: ${type}, using LOGGER_DEFAULT_MAX_LEVEL (${default_max_level})")
+      endif ()
+      set_target_properties(${target} PROPERTIES "${channel}_LOG_LEVEL_${type_upper}" "LOGGER_LEVEL_${default_max_level}")
+    endif ()
+  endforeach ()
+
+  set_target_properties(${target} PROPERTIES "${channel}_LOG_LEVEL_CONFIGURED" TRUE)
+
+  get_target_property(type ${target} TYPE)
+  if ("${type}" STREQUAL "INTERFACE_LIBRARY")
+    set(visibility "INTERFACE")
+  else ()
+    set(visibility "PRIVATE")
+  endif ()
+
+  if (is_multi_config)
+    foreach (type IN LISTS expected_build_types)
+      string(TOUPPER "${type}" type_upper)
+      list(APPEND compile_definitions
+           "$<$<CONFIG:${type}>:${channel}_LOG_CHANNEL_LEVEL=$<TARGET_PROPERTY:${target},${channel}_LOG_LEVEL_${type_upper}>>"
+      )
+    endforeach ()
+  else ()
+    string(TOUPPER "${single_build_type}" single_build_type_upper)
+    list(APPEND compile_definitions "${channel}_LOG_CHANNEL_LEVEL=$<TARGET_PROPERTY:${target},${channel}_LOG_LEVEL_${single_build_type_upper}>")
+  endif ()
+
+  message(DEBUG "compile_definitions for target ${target}: ${compile_definitions}")
+
+  target_compile_definitions(${target} ${visibility} ${compile_definitions})
+
+endfunction ()
+
+# ----------------------------------------------------------------------
+# This function sets logger channel level for given target. If the level is a defined variable, it is used as a value.
+# ----------------------------------------------------------------------
+function (logger_set_channel_level target channel level)
+  message(DEPRECATION "logger_set_channel_level is deprecated (incompatible with multi-config builds). Use logger_set_max_level instead")
+  if (NOT TARGET "${target}")
+    message(FATAL_ERROR "Target ${target} does not exist")
+  endif ()
+
+  if (DEFINED ${level})
+    message(DEBUG "Setting log level for target ${target} to ${${level}} (from ${level}) ")
+    set_property(
+      CACHE ${level}
+      PROPERTY STRINGS
+               DEFAULT
+               DISABLED
+               EMERGENCY
+               ALERT
+               CRITICAL
+               ERROR
+               WARNING
+               NOTICE
+               INFO
+               VERBOSE
+               DEBUG
+               TRACE
+    )
+    set(LEVEL_TO_SET ${${level}})
+  else ()
+    message(DEBUG "Setting log level for target ${target} to ${level} ")
+    set(LEVEL_TO_SET ${level})
+  endif ()
+
+  if (LEVEL_TO_SET STREQUAL "DEFAULT")
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+      set(LEVEL_TO_SET "DEBUG")
+    else ()
+      set(LEVEL_TO_SET "ERROR")
+    endif ()
+  endif ()
+
+  set(LOGGER_LEVEL "LOGGER_LEVEL_${LEVEL_TO_SET}")
+
+  get_target_property(CURRENT_LEVEL ${target} "${channel}_LOG_LEVEL")
+  if (NOT CURRENT_LEVEL)
+    set_target_properties(${target} PROPERTIES "${channel}_LOG_LEVEL" "${LOGGER_LEVEL}")
+    target_compile_definitions(${target} PRIVATE "-D${channel}_LOG_CHANNEL_LEVEL=$<TARGET_PROPERTY:${target},${channel}_LOG_LEVEL>")
+  else ()
+    message(FATAL_ERROR "Overriding log level is not supported (target: ${target}, channel: ${channel})")
+  endif ()
+endfunction ()
+
+# ----------------------------------------------------------------------
+# This function defines macro LOGGER_FILE for each source file in all buildable targets. The macro is defined as string containing base filename
+# (without path). When possible logger will use this macro, instead of __FILE__ This function shall be invoked AFTER defining last target with sources
+# (e.g. add_executable(...)
+# ----------------------------------------------------------------------
+function (logger_normalize_printable_filenames)
+  message(VERBOSE "Logger will use normalized filenames")
+  set(TARGETS)
+  logger_get_all_targets_recursive(TARGETS ${CMAKE_SOURCE_DIR})
+
+  foreach (TARGET IN LISTS TARGETS)
+    get_target_property(TARGET_SOURCE_DIR ${TARGET} SOURCE_DIR)
+    get_target_property(TARGET_SOURCES ${TARGET} SOURCES)
+    list(TRANSFORM TARGET_SOURCES PREPEND "${TARGET_SOURCE_DIR}/")
+
+    message(DEBUG "target ${TARGET}, sources: ${TARGET_SOURCES}")
+
+    foreach (SOURCE_FILE IN LISTS TARGET_SOURCES)
+      get_filename_component(SOURCE_FILE_NAME ${SOURCE_FILE} NAME)
+      get_source_file_property(SOURCE_COMPILE_DEFINITIONS ${SOURCE_FILE} TARGET_DIRECTORY ${TARGET} COMPILE_DEFINITIONS)
+
+      if (NOT SOURCE_COMPILE_DEFINITIONS)
+        set(SOURCE_COMPILE_DEFINITIONS)
+      endif ()
+
+      list(APPEND SOURCE_COMPILE_DEFINITIONS LOGGER_FILE=\"${SOURCE_FILE_NAME}\")
+
+      message(DEBUG "file ${SOURCE_FILE} flags: ${SOURCE_COMPILE_DEFINITIONS}")
+
+      set_source_files_properties(${SOURCE_FILE} TARGET_DIRECTORY ${TARGET} PROPERTIES COMPILE_DEFINITIONS "${SOURCE_COMPILE_DEFINITIONS}")
+    endforeach ()
+  endforeach ()
+endfunction ()
+
+# ----------------------------------------------------------------------
+# Internal helper macro used in logger_normalize_printable_filenames function. Recursively looks for targets in build directories
+# ----------------------------------------------------------------------
+macro (logger_get_all_targets_recursive targets dir)
+  get_property(subdirectories DIRECTORY ${dir} PROPERTY SUBDIRECTORIES)
+  foreach (subdir ${subdirectories})
+    logger_get_all_targets_recursive(${targets} ${subdir})
+  endforeach ()
+
+  get_property(current_targets DIRECTORY ${dir} PROPERTY BUILDSYSTEM_TARGETS)
+  list(APPEND ${targets} ${current_targets})
+endmacro ()
