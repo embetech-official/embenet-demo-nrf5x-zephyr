@@ -1,0 +1,117 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build samples and tests
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          path: embenet
+
+      # sdk-version "auto" takes the version the imported sdk-zephyr pins (1.0.1 for NCS v3.4.0),
+      # which is what provides the GCC 14 the border router headers need for C++23.
+      - name: Set up nRF Connect SDK
+        uses: zephyrproject-rtos/action-zephyr-setup@v1
+        with:
+          app-path: embenet
+          toolchains: arm-zephyr-eabi:x86_64-zephyr-elf
+          sdk-version: auto
+
+      # Samples target real hardware, so they can only be built. tests/ runs for real, below.
+      - name: Build samples (twister)
+        working-directory: embenet
+        run: |
+          west twister \
+            --testsuite-root samples \
+            --build-only \
+            --inline-logs \
+            --verbose \
+            --outdir twister-out
+
+      - name: Run host tests (twister, native_sim)
+        working-directory: embenet
+        run: |
+          west twister \
+            --testsuite-root tests \
+            --platform native_sim/native/64 \
+            --inline-logs \
+            --verbose \
+            --outdir twister-out-native
+
+      - name: Upload twister reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: twister-reports
+          path: |
+            embenet/twister-out/twister.xml
+            embenet/twister-out/twister.log
+            embenet/twister-out-native/twister.xml
+            embenet/twister-out-native/twister.log
+          if-no-files-found: warn
+
+  ble-central:
+    name: node_ble Bluetooth LE central (Python)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: samples/node_ble/ble_central
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install '.[dev]'
+
+      # The tests run against fakes of bleak, so no Bluetooth adapter is needed. pyproject.toml sets the 95 % coverage floor.
+      - name: Test
+        run: python -m pytest
+
+      - name: Lint
+        run: |
+          ruff check .
+          ruff format --check .
+
+      - name: Type check
+        run: mypy
+
+  spelling:
+    name: cspell
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - run: npx --yes cspell@latest lint --no-progress .
+
+  format:
+    name: clang-format
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      # Pinned, so CI and a developer's machine agree: versions differ in what they consider formatted.
+      - name: Install clang-format
+        run: pip install clang-format==21.1.8
+
+      # Tracked sources only, so nothing a local build or virtual environment left behind is checked. libs/ holds
+      # release bundles and is not ours to reformat.
+      - name: Check formatting
+        run: |
+          clang-format --version
+          files=$(git ls-files ports samples tests | grep -E '\.(c|h|cpp|hpp)$')
+          echo "$files"
+          clang-format --dry-run --Werror $files

@@ -1,0 +1,11 @@
+/* This UART is used only by a root node to talk to an external border router; regular nodes do not use it. */
+/ {
+	aliases {
+		embenet-border-router-uart = &uart1;
+	};
+};
+
+&uart1 {
+	status = "okay";
+	current-speed = <115200>;
+};

@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2026 Embetech sp. z o.o.
+# SPDX-License-Identifier: Apache-2.0
+
+sample:
+  name: embeNET Node
+  description: Mesh node that joins an embeNET network, reports on network time and links buttons and LEDs across the network
+tests:
+  sample.embenet.node:
+    tags: embenet
+    build_only: true
+    platform_allow:
+      - nrf52840dk/nrf52840
+      - nrf52833dk/nrf52833
+      - nrf52dk/nrf52832
+      - nrf5340dk/nrf5340/cpunet
+      - nrf54l15dk/nrf54l15/cpuapp

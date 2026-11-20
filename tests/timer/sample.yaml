@@ -1,0 +1,15 @@
+sample:
+  name: embeNET Node timer port test
+  description: Rate, compare accuracy and past-compare checks for the EMBENET_TIMER_* port
+tests:
+  sample.embenet.timer:
+    tags: embenet
+    # The reference clock is TIMER20, which only the nRF54L has. Widening this to the nRF52 means
+    # picking its own free TIMER instance first.
+    platform_allow:
+      - nrf54l15dk/nrf54l15/cpuapp
+    harness: console
+    harness_config:
+      type: one_line
+      regex:
+        - "PROJECT EXECUTION SUCCESSFUL"

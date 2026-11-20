@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: 2026 Embetech sp. z o.o.
+# SPDX-License-Identifier: Apache-2.0
+
+# nRF5340 DK: the node runs on the network core, which only the application core can start. Build the empty application
+# core image for that; it also hands the LEDs and buttons over (see sysbuild/empty_app_core.overlay).
+config NRF_DEFAULT_EMPTY
+	default y if SOC_NRF5340_CPUNET
+
+source "share/sysbuild/Kconfig"

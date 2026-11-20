@@ -1,0 +1,38 @@
+{
+    "_comment": {"comment": ["embeNET Bluetooth LE services - see samples/node_ble/src/README.md.",
+                             "nRF Connect for Desktop (Bluetooth Low Energy app): Device options > Open UUID definitions file, merge these sections in, reload (Ctrl+R).",
+                             "nRF Connect for Mobile (Android): Menu > Definitions > Import."]},
+
+    "uuid16bitServiceDefinitions": {
+    },
+
+    "uuid16bitCharacteristicDefinitions": {
+    },
+
+    "uuid16bitDescriptorDefinitions": {
+    },
+
+    "uuid128bitServiceDefinitions": {
+        "BAB80100E2374BC280C73AC1568EF5A6": {"name": "embeNET Provisioning"},
+        "BAB80200E2374BC280C73AC1568EF5A6": {"name": "embeNET Info"}
+    },
+
+    "uuid128bitCharacteristicDefinitions": {
+        "BAB80101E2374BC280C73AC1568EF5A6": {"name": "embeNET K1"},
+        "BAB80102E2374BC280C73AC1568EF5A6": {"name": "embeNET PSK"},
+        "BAB80103E2374BC280C73AC1568EF5A6": {"name": "embeNET Active"},
+        "BAB80201E2374BC280C73AC1568EF5A6": {"name": "embeNET EUI-64"},
+        "BAB80202E2374BC280C73AC1568EF5A6": {"name": "embeNET Stack Version", "format": "TEXT"},
+        "BAB80203E2374BC280C73AC1568EF5A6": {"name": "embeNET Groups"},
+        "BAB80204E2374BC280C73AC1568EF5A6": {"name": "embeNET Neighbors Count"},
+        "BAB80205E2374BC280C73AC1568EF5A6": {"name": "embeNET Neighbor Select"},
+        "BAB80206E2374BC280C73AC1568EF5A6": {"name": "embeNET Neighbor Info"},
+        "BAB80207E2374BC280C73AC1568EF5A6": {"name": "embeNET Parent EUI-64"},
+        "BAB80208E2374BC280C73AC1568EF5A6": {"name": "embeNET Parent RSSI"},
+        "BAB80209E2374BC280C73AC1568EF5A6": {"name": "embeNET Radio Duty Cycle"},
+        "BAB8020AE2374BC280C73AC1568EF5A6": {"name": "embeNET Connection Parameters"}
+    },
+
+    "uuid128bitDescriptorDefinitions": {
+    }
+}

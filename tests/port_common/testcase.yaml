@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2026 Embetech sp. z o.o.
+# SPDX-License-Identifier: Apache-2.0
+
+tests:
+  embenet.port_common:
+    tags: embenet
+    # ports/common links against no prebuilt library, so it runs on the host. The 64-bit variant
+    # avoids native_sim's default 32-bit build, which needs gcc-multilib.
+    platform_allow:
+      - native_sim/native/64

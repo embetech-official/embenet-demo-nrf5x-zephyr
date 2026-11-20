@@ -1,0 +1,16 @@
+sample:
+  name: embeNET Node AES-128 port test
+  description: Known-answer, round-trip and rekey checks for the EMBENET_AES128_* port
+tests:
+  sample.embenet.aes128:
+    tags: embenet
+    # The encrypt side is the SoC's ECB peripheral, so this only builds where that peripheral is.
+    platform_allow:
+      - nrf52840dk/nrf52840
+      - nrf52833dk/nrf52833
+      - nrf54l15dk/nrf54l15/cpuapp
+    harness: console
+    harness_config:
+      type: one_line
+      regex:
+        - "PROJECT EXECUTION SUCCESSFUL"

@@ -1,0 +1,82 @@
+# SPDX-FileCopyrightText: 2026 Embetech sp. z o.o.
+# SPDX-License-Identifier: Apache-2.0
+
+# The name a Bluetooth scanner shows, telling the chips apart. Ahead of Kconfig.zephyr, so that these
+# defaults take precedence over Zephyr's own.
+config BT_DEVICE_NAME
+	default "embeNET nRF54L15" if SOC_NRF54L15
+	default "embeNET nRF52840" if SOC_NRF52840
+	default "embeNET nRF52833" if SOC_NRF52833
+	default "embeNET nRF52832" if SOC_NRF52832
+	default "embeNET nRF5340" if SOC_NRF5340_CPUNET
+	default "embeNET nRF54" if SOC_SERIES_NRF54L
+	default "embeNET nRF52" if SOC_SERIES_NRF52
+
+# Connection parameters the node asks a central for: a long interval (200-400 ms) and a 7 s supervision
+# timeout leave most of the radio to the mesh. The timeout must exceed (1 + latency) x max interval x 2,
+# or Zephyr never sends the request; src/embenet_ble.c checks this at build time.
+config BT_PERIPHERAL_PREF_MIN_INT
+	default 160 # x 1.25 ms = 200 ms
+
+config BT_PERIPHERAL_PREF_MAX_INT
+	default 320 # x 1.25 ms = 400 ms
+
+config BT_PERIPHERAL_PREF_LATENCY
+	default 0
+
+config BT_PERIPHERAL_PREF_TIMEOUT
+	default 700 # x 10 ms = 7000 ms
+
+source "Kconfig.zephyr"
+
+# ----- embeNET middleware, src/embenet*.c - see src/README.md -----
+
+menu "embeNET middleware"
+
+config EMBENET_SETTINGS_DEFAULT_K1
+	string "Default K1, as 32 hex digits"
+	default "11000000000000000000000000000000"
+	help
+	  The network key the node uses while the setting embenet/k1 has never been stored. Must
+	  match every device of the network; this default matches samples/border_router_integrated.
+
+config EMBENET_SETTINGS_DEFAULT_PSK
+	string "Default PSK, as 32 hex digits"
+	default "33000000000000000000000000000000"
+	help
+	  The pre-shared key the node uses while the setting embenet/psk has never been stored. The
+	  border router's join rule must admit it; this default matches samples/border_router_integrated.
+
+config EMBENET_SETTINGS_DEFAULT_ACTIVE
+	bool "Stack active by default"
+	default y
+	help
+	  Whether the stack runs while the setting embenet/active has never been stored.
+
+config EMBENET_MIDDLEWARE_THREAD_STACK_SIZE
+	int "Stack size of the embeNET thread, in bytes"
+	default 2048
+	help
+	  The thread runs EMBENET_NODE_Proc() and with it every stack callback, including the
+	  application's event callback and its stack tasks.
+
+# The Bluetooth LE peripheral, src/embenet_ble*.c: embeNET Provisioning (K1, PSK, active switch) and embeNET Info (EUI-64,
+# stack version, groups, neighbors, parent, radio duty cycle) GATT services.
+
+config EMBENET_BLE_ADV_INTERVAL_MIN_MS
+	int "Minimum advertising interval, in milliseconds"
+	default 500
+	range 20 10240
+
+config EMBENET_BLE_ADV_INTERVAL_MAX_MS
+	int "Maximum advertising interval, in milliseconds"
+	default 600
+	range 20 10240
+	help
+	  A longer interval leaves more radio time to the mesh at the cost of slower discovery.
+
+config EMBENET_BLE_INFO_MAX_GROUPS
+	int "Groups the Info service reports at most"
+	default 16
+
+endmenu

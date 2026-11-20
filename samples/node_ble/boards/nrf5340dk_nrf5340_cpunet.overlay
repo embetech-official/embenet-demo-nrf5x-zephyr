@@ -1,0 +1,19 @@
+/* SPDX-FileCopyrightText: 2026 Embetech sp. z o.o. */
+/* SPDX-License-Identifier: Apache-2.0 */
+
+/*
+ * The image - Bluetooth host and controller, MPSL and embeNET - is nearly 240 KB, and without MCUboot it is linked from
+ * the start of the network core's flash, over the board's storage_partition at 0x3a000. The settings hold a handful of
+ * keys, so storage shrinks to the last four pages of flash, which settings NVS takes as four sectors.
+ */
+/delete-node/ &storage_partition;
+
+&flash1 {
+	partitions {
+		storage_partition: partition@3e000 {
+			compatible = "zephyr,mapped-partition";
+			label = "storage";
+			reg = <0x0003e000 0x2000>;
+		};
+	};
+};

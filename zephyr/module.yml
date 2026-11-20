@@ -1,0 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Embetech sp. z o.o.
+# SPDX-License-Identifier: Apache-2.0
+
+name: embenet
+build:
+  cmake: .
+  kconfig: Kconfig

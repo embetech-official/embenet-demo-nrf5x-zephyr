@@ -1,0 +1,15 @@
+/* SPDX-FileCopyrightText: 2026 Embetech sp. z o.o. */
+/* SPDX-License-Identifier: Apache-2.0 */
+
+/*
+ * nRF5340 DK only: this image runs on the application core and does nothing but start the network core, where the node
+ * runs. A pin is driven by the core it is assigned to, and the application core hands over only the UART pins by
+ * default - so the network core's LEDs and buttons would stay dark and dead. The four LEDs and four buttons of the DK go
+ * to the network core too.
+ */
+&gpio_fwd {
+	leds-buttons {
+		gpios = <&gpio0 28 0>, <&gpio0 29 0>, <&gpio0 30 0>, <&gpio0 31 0>,
+			<&gpio0 23 0>, <&gpio0 24 0>, <&gpio0 8 0>, <&gpio0 9 0>;
+	};
+};

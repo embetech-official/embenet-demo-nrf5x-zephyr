@@ -1,0 +1,155 @@
+/* Stylesheet for ble_central.py — loaded via CentralApp.CSS_PATH.
+   Textual CSS, not web CSS: https://textual.textualize.io/guide/CSS/ */
+
+#hint {
+    color: $text-muted;
+    padding: 0 2;
+    margin: 1 0;
+}
+
+#nodes {
+    height: 1fr;
+    margin: 0 1;
+    padding: 0 1;
+    border: round $primary;
+}
+
+/* One node: a card of its own, a blank line from the next. The border's
+   color is the connection state, so it reads the same on every row,
+   highlighted or not. */
+#nodes > NodeRow {
+    height: auto;
+    margin-bottom: 1;
+    padding: 0 1;
+    border: round $panel-lighten-2;
+    border-title-align: left;
+    border-title-color: $foreground;
+}
+
+#nodes > NodeRow.busy {
+    border: round $warning;
+}
+
+#nodes > NodeRow.connected {
+    border: round $success;
+    border-title-color: $success;
+}
+
+#nodes > NodeRow.stale {
+    opacity: 50%;
+}
+
+/* The cursor. Textual's own makes the highlighted row bold, which made one
+   connected row look different from the others; here it only shades it, and
+   the same whether the list or a button or field in a row has the focus, so
+   clicking around does not change the shade. */
+#nodes > NodeRow.-highlight,
+#nodes:focus > NodeRow.-highlight {
+    color: $foreground;
+    background: $primary 15%;
+    text-style: none;
+}
+
+NodeRow > Horizontal {
+    height: auto;
+}
+
+NodeRow .left {
+    width: 34;
+    height: auto;
+    padding-right: 2;
+}
+
+NodeRow .summary {
+    height: auto;
+}
+
+NodeRow .connect {
+    margin-top: 1;
+    min-width: 12;
+}
+
+NodeRow .note {
+    width: 1fr;
+    height: auto;
+}
+
+/* --- Service panels, side by side ------------------------------------------ */
+
+NodeRow .panels {
+    width: 1fr;
+    height: auto;
+}
+
+.panel {
+    width: auto;
+    height: auto;
+    margin-right: 4;
+}
+
+.panel-head,
+.control {
+    width: auto;
+    height: 1;
+}
+
+.panel-title {
+    width: auto;
+    margin-right: 2;
+}
+
+.panel .refresh {
+    min-width: 9;
+}
+
+.panel-body {
+    width: auto;
+    height: auto;
+}
+
+/* Provisioning: Active, K1 and PSK */
+
+.panel .control {
+    margin-top: 1;
+}
+
+.control-name {
+    width: 8;
+}
+
+.control Input {
+    width: 34;
+}
+
+.control Button {
+    min-width: 7;
+    margin-left: 1;
+}
+
+.control Switch {
+    height: 1;
+    border: none;
+    padding: 0;
+    margin-right: 2;
+}
+
+.control .active-status {
+    width: auto;
+}
+
+.key-field {
+    width: auto;
+    height: auto;
+}
+
+.key-status {
+    width: auto;
+    height: 1;
+    padding-left: 8;
+}
+
+#status {
+    height: 1;
+    padding: 0 2;
+    background: $panel;
+}
